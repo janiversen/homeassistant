@@ -7,6 +7,8 @@ from homeassistant.components.modbus.const import (
     CALL_TYPE_DISCRETE,
     CONF_INPUT_TYPE,
     CONF_LAZY_ERROR,
+    CONF_VIRTUAL_COUNT,
+    CONF_VIRTUAL_NAMES,
 )
 from homeassistant.const import (
     CONF_ADDRESS,
@@ -172,3 +174,68 @@ async def test_service_binary_sensor_update(hass, mock_modbus, mock_ha):
 async def test_restore_state_binary_sensor(hass, mock_test_state, mock_modbus):
     """Run test for binary sensor restore state."""
     assert hass.states.get(ENTITY_ID).state == mock_test_state[0].state
+
+TEST_NAME = "test_sensor"
+
+
+@pytest.mark.parametrize(
+    "do_config",
+    [
+        {CONF_VIRTUAL_COUNT: 3},
+        {
+            CONF_VIRTUAL_NAMES: [
+                TEST_NAME + "_1",
+                TEST_NAME + "_2",
+                TEST_NAME + "_3",
+            ]
+        },
+    ],
+)
+async def test_config_virtual_binary_sensor(hass, do_config):
+    """Run test for virtual binary sensor."""
+    config_sensor = {
+        CONF_NAME: TEST_NAME,
+        CONF_ADDRESS: 51,
+        **do_config,
+    }
+    await base_config_test(
+        hass,
+        config_sensor,
+        TEST_NAME,
+        SENSOR_DOMAIN,
+        CONF_BINARY_SENSORS,
+        CONF_INPUTS,
+        method_discovery=True,
+    )
+    for addon in ["", "_1", "_2", "_3"]:
+        entity_id = f"{SENSOR_DOMAIN}.{TEST_NAME}{addon}"
+        assert hass.states.get(entity_id) is not None
+
+
+async def test_virtual_binary_sensor(hass):
+    """Run test for virtual sensors."""
+    config_sensor = {
+        CONF_NAME: TEST_NAME,
+        CONF_ADDRESS: 51,
+        CONF_VIRTUAL_NAMES: [
+            TEST_NAME + "_1",
+            TEST_NAME + "_2",
+            TEST_NAME + "_3",
+        ],
+    }
+    expected = STATE_ON
+    await base_test(
+        hass,
+        config_sensor,
+        TEST_NAME,
+        SENSOR_DOMAIN,
+        CONF_BINARY_SENSORS,
+        CONF_INPUTS,
+        [0x01],
+        expected,
+        method_discovery=True,
+        scan_interval=5,
+    )
+    for addon in ["", "_1", "_2", "_3"]:
+        entity_id = f"{SENSOR_DOMAIN}.{TEST_NAME}{addon}"
+        assert hass.states.get(entity_id).state == STATE_ON

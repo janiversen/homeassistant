@@ -97,6 +97,10 @@ from .const import (
     CONF_TARGET_TEMP,
     CONF_VERIFY,
     CONF_WRITE_TYPE,
+    CONF_VERIFY_REGISTER,
+    CONF_VERIFY_STATE,
+    CONF_VIRTUAL_COUNT,
+    CONF_VIRTUAL_NAMES,
     DATA_TYPE_CUSTOM,
     DATA_TYPE_FLOAT,
     DATA_TYPE_FLOAT16,
@@ -287,6 +291,8 @@ BINARY_SENSOR_SCHEMA = BASE_COMPONENT_SCHEMA.extend(
         vol.Optional(CONF_INPUT_TYPE, default=CALL_TYPE_COIL): vol.In(
             [CALL_TYPE_COIL, CALL_TYPE_DISCRETE]
         ),
+        vol.Optional(CONF_VIRTUAL_COUNT, default=0): cv.positive_int,
+        vol.Optional(CONF_VIRTUAL_NAMES): vol.All(cv.ensure_list, [cv.string]),
     }
 )
 
