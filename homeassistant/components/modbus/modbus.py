@@ -6,12 +6,12 @@ from collections import namedtuple
 import logging
 from typing import Any, Callable
 
-from pymodbus.client.sync import (
-    BaseModbusClient,
-    ModbusSerialClient,
-    ModbusTcpClient,
-    ModbusUdpClient,
-)
+from pymodbus.client.sync import BaseModbusClient
+from pymodbus.client.asynchronous import schedulers
+from pymodbus.client.asynchronous.serial import AsyncModbusSerialClient
+from pymodbus.client.asynchronous.tcp import AsyncModbusTCPClient
+from pymodbus.client.asynchronous.udp import AsyncModbusUDPClient
+from pymodbus.client.sync import ModbusSerialClient, ModbusTcpClient, ModbusUdpClient
 from pymodbus.constants import Defaults
 from pymodbus.exceptions import ModbusException
 from pymodbus.pdu import ModbusResponse
@@ -52,6 +52,7 @@ from .const import (
     CONF_BYTESIZE,
     CONF_CLOSE_COMM_ON_ERROR,
     CONF_MSG_WAIT,
+    CONF_COMPAT_SYNC,
     CONF_PARITY,
     CONF_RETRIES,
     CONF_RETRY_ON_EMPTY,
@@ -234,6 +235,7 @@ class ModbusHub:
         self._config_type = client_config[CONF_TYPE]
         self._config_delay = client_config[CONF_DELAY]
         self._pb_call: dict[str, RunEntry] = {}
+        self._compat = client_config[CONF_COMPAT_SYNC]
         self._pb_class = {
             SERIAL: ModbusSerialClient,
             TCP: ModbusTcpClient,
@@ -247,7 +249,27 @@ class ModbusHub:
             "retries": client_config[CONF_RETRIES],
             "retry_on_empty": client_config[CONF_RETRY_ON_EMPTY],
         }
-        if self._config_type == SERIAL:
+        if self._compat:
+            self._pb_class = {
+                CONF_SERIAL: ModbusSerialClient,
+                CONF_TCP: ModbusTcpClient,
+                CONF_UDP: ModbusUdpClient,
+                CONF_RTUOVERTCP: ModbusTcpClient,
+            }
+        else:
+            self._pb_class = {
+                CONF_SERIAL: AsyncModbusSerialClient,
+                CONF_TCP: AsyncModbusTCPClient,
+                CONF_UDP: AsyncModbusUDPClient,
+                CONF_RTUOVERTCP: AsyncModbusTCPClient,
+            }
+            self._pb_params.update(
+                {
+                    "scheduler": schedulers.ASYNC_IO,
+                    "loop": self.hass.loop,
+                }
+            )
+        if self._config_type == CONF_SERIAL:
             # serial configuration
             self._pb_params.update(
                 {

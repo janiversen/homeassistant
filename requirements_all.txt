@@ -1768,6 +1768,7 @@ pysdcp==1
 # homeassistant.components.sensibo
 pysensibo==1.0.3
 
+# homeassistant.components.modbus
 # homeassistant.components.serial
 # homeassistant.components.zha
 pyserial-asyncio==0.5
@@ -1775,6 +1776,7 @@ pyserial-asyncio==0.5
 # homeassistant.components.acer_projector
 # homeassistant.components.crownstone
 # homeassistant.components.usb
+# homeassistant.components.modbus
 # homeassistant.components.zha
 pyserial==3.5
 

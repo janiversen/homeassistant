@@ -2,7 +2,7 @@
   "domain": "modbus",
   "name": "Modbus",
   "documentation": "https://www.home-assistant.io/integrations/modbus",
-  "requirements": ["pymodbus==2.5.3rc1"],
+  "requirements": ["pymodbus==2.5.3rc1", "pyserial==3.5", "pyserial-asyncio==0.5"],
   "codeowners": ["@adamchengtkc", "@janiversen", "@vzahradnik"],
   "quality_scale": "gold",
   "iot_class": "local_polling"

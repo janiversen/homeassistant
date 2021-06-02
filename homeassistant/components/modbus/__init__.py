@@ -65,6 +65,7 @@ from .const import (
     CONF_BYTESIZE,
     CONF_CLIMATES,
     CONF_CLOSE_COMM_ON_ERROR,
+    CONF_COMPAT_SYNC,
     CONF_DATA_COUNT,
     CONF_DATA_TYPE,
     CONF_FANS,
@@ -312,6 +313,7 @@ MODBUS_SCHEMA = vol.Schema(
         ),
         vol.Optional(CONF_SWITCHES): vol.All(cv.ensure_list, [SWITCH_SCHEMA]),
         vol.Optional(CONF_FANS): vol.All(cv.ensure_list, [FAN_SCHEMA]),
+        vol.Optional(CONF_COMPAT_SYNC, default=False): cv.boolean,
     }
 )
 
