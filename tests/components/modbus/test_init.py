@@ -155,6 +155,13 @@ async def test_number_validator():
             CONF_DATA_TYPE: DATA_TYPE_INT,
             CONF_SWAP: CONF_SWAP_BYTE,
         },
+        {
+            CONF_NAME: TEST_ENTITY_NAME,
+            CONF_COUNT: 2,
+            CONF_DATA_TYPE: DATA_TYPE_CUSTOM,
+            CONF_STRUCTURE: ">i",
+            CONF_SWAP: CONF_SWAP_BYTE,
+        },
     ],
 )
 async def test_ok_struct_validator(do_config):
@@ -194,6 +201,13 @@ async def test_ok_struct_validator(do_config):
             CONF_NAME: TEST_ENTITY_NAME,
             CONF_COUNT: 1,
             CONF_DATA_TYPE: DATA_TYPE_CUSTOM,
+            CONF_STRUCTURE: ">f",
+            CONF_SWAP: CONF_SWAP_WORD,
+        },
+        {
+            CONF_NAME: TEST_ENTITY_NAME,
+            CONF_COUNT: 1,
+            CONF_DATA_TYPE: DATA_TYPE_STRING,
             CONF_STRUCTURE: ">f",
             CONF_SWAP: CONF_SWAP_WORD,
         },
